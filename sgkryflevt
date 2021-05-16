@@ -1,0 +1,24 @@
+total 824
+drwxrwxrwt 14 root     root      20480 May 16 23:55 .
+drwxr-xr-x 21 root     root       4096 May 16 15:06 ..
+drwxrwxrwt  2 root     root       4096 May 16 15:06 .ICE-unix
+drwxrwxrwt  2 root     root       4096 May 16 15:06 .Test-unix
+drwxrwxrwt  2 root     root       4096 May 16 15:06 .X11-unix
+drwxrwxrwt  2 root     root       4096 May 16 15:06 .XIM-unix
+drwxrwxrwt  2 root     root       4096 May 16 15:06 .font-unix
+srwx------  1 root     root          0 May 16 15:06 SERVERENGINE_SOCKETMANAGER_2021-05-16T15:06:16Z_759
+-rwxrwxrwx  1 root     root       1169 May 16 23:39 client.py
+prwx------  1 root     root          0 May 16 23:05 clr-debug-pipe-12196-2879354-in
+prwx------  1 root     root          0 May 16 23:05 clr-debug-pipe-12196-2879354-out
+prwx------  1 root     root          0 May 16 23:55 clr-debug-pipe-14370-3174429-in
+prwx------  1 root     root          0 May 16 23:55 clr-debug-pipe-14370-3174429-out
+srw-------  1 root     root          0 May 16 23:05 dotnet-diagnostic-12196-2879354-socket
+srw-------  1 root     root          0 May 16 23:55 dotnet-diagnostic-14370-3174429-socket
+drwxr-xr-x  2 root     root       4096 May 15 03:00 pygit
+-rw-r--r--  1 root     root     762509 May 16 23:49 pygit.tar.gz
+drwx------  3 root     root       4096 May 16 15:06 snap.lxd
+drwx------  3 root     root       4096 May 16 15:06 systemd-private-19c0d25156854d6eb1351c82fdb0b354-chrony.service-M9bkli
+drwx------  3 root     root       4096 May 16 15:06 systemd-private-19c0d25156854d6eb1351c82fdb0b354-haveged.service-toJ4if
+drwx------  3 root     root       4096 May 16 15:06 systemd-private-19c0d25156854d6eb1351c82fdb0b354-systemd-logind.service-qKPxBh
+drwx------  3 root     root       4096 May 16 15:06 systemd-private-19c0d25156854d6eb1351c82fdb0b354-systemd-resolved.service-WWxIPg
+drwxr-xr-x  3 www-data www-data   4096 May 16 15:06 www-data-temp-aspnet-0

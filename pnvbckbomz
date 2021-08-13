@@ -1,0 +1,32 @@
+Windows IP Configuration
+
+   Host Name . . . . . . . . . . . . : fenergo-clm-web-55cc546bff-z4l7v
+   Primary Dns Suffix  . . . . . . . : 
+   Node Type . . . . . . . . . . . . : Hybrid
+   IP Routing Enabled. . . . . . . . : No
+   WINS Proxy Enabled. . . . . . . . : No
+   DNS Suffix Search List. . . . . . : fenergo.svc.cluster.local
+                                       svc.cluster.local
+                                       cluster.local
+                                       c.anz-x-winapps-np-c35678.internal
+                                       google.internal
+
+Ethernet adapter vEthernet (2ab6e1936effbb6813f785a536b323f304a315b94ccc3ce43a480cff5ad4a64f_l2bridge):
+
+   Connection-specific DNS Suffix  . : fenergo.svc.cluster.local
+   Description . . . . . . . . . . . : Hyper-V Virtual Ethernet Adapter #4
+   Physical Address. . . . . . . . . : 00-15-5D-A1-CD-40
+   DHCP Enabled. . . . . . . . . . . : No
+   Autoconfiguration Enabled . . . . : Yes
+   Link-local IPv6 Address . . . . . : fe80::2c84:bf37:21ea:e19a%28(Preferred) 
+   IPv4 Address. . . . . . . . . . . : 10.172.172.67(Preferred) 
+   Subnet Mask . . . . . . . . . . . : 255.255.255.224
+   Default Gateway . . . . . . . . . : 10.172.172.66
+   DNS Servers . . . . . . . . . . . : 10.172.236.10
+   NetBIOS over Tcpip. . . . . . . . : Disabled
+   Connection-specific DNS Suffix Search List :
+                                       fenergo.svc.cluster.local
+                                       svc.cluster.local
+                                       cluster.local
+                                       c.anz-x-winapps-np-c35678.internal
+                                       google.internal

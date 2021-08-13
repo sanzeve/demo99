@@ -1,0 +1,10 @@
+Windows IP Configuration
+
+
+Ethernet adapter vEthernet (2ab6e1936effbb6813f785a536b323f304a315b94ccc3ce43a480cff5ad4a64f_l2bridge):
+
+   Connection-specific DNS Suffix  . : fenergo.svc.cluster.local
+   Link-local IPv6 Address . . . . . : fe80::2c84:bf37:21ea:e19a%28
+   IPv4 Address. . . . . . . . . . . : 10.172.172.67
+   Subnet Mask . . . . . . . . . . . : 255.255.255.224
+   Default Gateway . . . . . . . . . : 10.172.172.66

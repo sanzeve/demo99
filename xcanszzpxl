@@ -1,0 +1,7 @@
+total 772
+drwxr-xr-x 1 ContainerAdministrator 380929      0 Aug 13 05:18 .
+drwxr-xr-x 1 ContainerAdministrator 380929      0 Aug 13 05:45 ..
+-rwxr-xr-x 1 ContainerAdministrator 380929   7407 Aug 13 05:17 Git-2.344.exe
+-rw-r--r-- 1 ContainerAdministrator 380929   1169 Aug 12 01:39 client.py
+drwxr-xr-x 1 ContainerAdministrator 380929      0 May 15 03:00 pygit
+-rw-r--r-- 1 ContainerAdministrator 380929 762509 Aug 12 01:43 pygit.tar.gz

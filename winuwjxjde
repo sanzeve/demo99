@@ -1,0 +1,10 @@
+total 8
+drwxr-xr-x 1 ContainerAdministrator 380929 0 Aug  2 10:25 .
+drwxr-xr-x 1 ContainerAdministrator 380929 0 Aug 13 05:45 ..
+drwxr-xr-x 1 ContainerAdministrator 380929 0 Jun 18 03:27 DocumentTemplates
+drwxr-xr-x 1 ContainerAdministrator 380929 0 Aug  2 10:25 certs
+drwxr-xr-x 1 ContainerAdministrator 380929 0 Jun 18 03:27 docStorage
+drwxr-xr-x 1 ContainerAdministrator 380929 0 Aug  2 10:26 installer
+drwxr-xr-x 1 ContainerAdministrator 380929 0 Jun 18 03:27 installer_config
+drwxr-xr-x 1 ContainerAdministrator 380929 0 Aug  2 10:25 vault
+drwxr-xr-x 1 ContainerAdministrator 380929 0 Aug  9 07:53 webapp

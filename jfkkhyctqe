@@ -1,0 +1,218 @@
+$ErrorActionPreference = "Stop"
+$ProgressPreference = 'SilentlyContinue'
+
+function Get-FenergoApplicationPools {
+    return Get-IISAppPool | Where-Object { $_.Name -Like "$env:APP_NAME*" }
+}
+
+function Get-FenergoWebApplications {
+    return Get-WebApplication | Where-Object { $_.Path.Trim('/') -Like "$env:APP_NAME*" }
+}
+
+function Update-IIS {
+    if (Test-Path "$env:TEMP/update-iis.lock") {
+        return
+    }
+
+    if ($env:CUSTOM_HTTP_RESPONSE_HEADERS -eq $true) {
+        Write-Host "[Info] Adding custom HTTP response headers..."
+        & C:\windows\system32\inetsrv\appcmd.exe set config "Default Web Site" -section:system.webServer/httpProtocol /+"customHeaders.[name='X-Platform',value='docker']"
+        $nodeName = $env:COMPUTERNAME
+        if ($env:NODE_NAME) {
+            $nodeName = $env:NODE_NAME
+        }
+        & C:\windows\system32\inetsrv\appcmd.exe set config "Default Web Site" -section:system.webServer/httpProtocol /+"customHeaders.[name='X-Platform-NodeName',value='$nodeName']"
+    }
+
+    # Reconfigure Fenergo Application Pools
+    Get-FenergoApplicationPools | ForEach-Object {
+        Write-Host "[Info] Setting ``startMode:AlwaysRunning``, ``autoStart:true``, ``recycling.periodicRestart.time:00:00:00``, ``processModel.idleTimeout:00:00:00``, ``failure.rapidFailProtection:true``, ``failure.rapidFailProtectionMaxCrashes:5000`` on  ``$($_.Name)`` application pool..."
+        & C:\windows\system32\inetsrv\appcmd.exe set apppool /apppool.name:$($_.Name) `
+            /startMode:AlwaysRunning `
+            /autoStart:true `
+            /recycling.periodicRestart.time:00:00:00 `
+            /processModel.idleTimeout:00:00:00 `
+            /failure.rapidFailProtection:true `
+            /failure.rapidFailProtectionMaxCrashes:5000 | Out-Null
+    }
+
+    # Reconfigure Fenergo Applications
+    Get-FenergoWebApplications | ForEach-Object {
+        Write-Host "[Info] Setting ``preloadEnabled:true`` on ``Default Web Site$($_.Path)`` website..."
+        & C:\windows\system32\inetsrv\appcmd.exe set app "Default Web Site$($_.Path)" /preloadEnabled:true | Out-Null
+    }
+
+    New-Item -Path "$env:TEMP/update-iis.lock" -ItemType File | Out-Null
+}
+
+function Update-HostsFile {
+    if ($env:EXTERNAL_SERVER_NAME -and $env:EXTERNAL_SERVER_NAME -ne "localhost") {
+        Write-Host "[Info] Updating hosts file.."
+        Write-Output "127.0.0.1 $env:EXTERNAL_SERVER_NAME" | Out-File C:\Windows\System32\drivers\etc\hosts
+    }
+}
+
+function Invoke-FenergoInstaller {
+    $preInstallerScript = "$PSScriptRoot/pre-installer.ps1"
+    if (Test-Path $preInstallerScript) {
+        & $preInstallerScript
+    }
+
+    [Reflection.Assembly]::LoadWithPartialName("System.Xml.Linq") | Out-Null
+
+    $installerStaticConfig = "$env:INSTALLER_CONFIG_BASEDIR/installer_static.config"
+    $installerSourceConfig = "$env:INSTALLER_CONFIG_BASEDIR/installer.config"
+    $installerRuntimeConfig = "$env:TEMP/installer_runtime.config"
+    if (Test-Path $installerStaticConfig) {
+        $installerSourceConfig = $installerStaticConfig
+    }
+
+    $transformationFileName = ([xml](Get-Content $installerSourceConfig)).configuration.transformationFile
+    Copy-Item -Path (Join-Path ($installerSourceConfig | Split-Path -Parent) $transformationFileName) `
+        -Destination "$env:TEMP/$transformationFileName" `
+        -Force
+
+    if ($installerSourceConfig -ne $installerStaticConfig) {
+        Write-Host "[Info] Updating Fenergo installer settings: $installerSourceConfig"
+        $xDoc = [System.Xml.Linq.XDocument]::Load($installerSourceConfig)
+        $settings = $xDoc.Root.Element('Settings').Descendants()
+
+        $updatedSettings = [System.Collections.ArrayList]::new()
+        foreach ($name in [System.Environment]::GetEnvironmentVariables().Keys) {
+            $token = $name -replace '_', ''
+            $setting = $settings | Where-Object { $_.Name -like $token } | Select-Object -First 1
+
+            if (-not $setting) {
+                continue
+            }
+
+            Write-Host "[Info] Updating ``$($setting.Name)`` Fenergo installer setting..."
+            $updatedSettings.Add($setting.Name) | Out-Null
+            $setting.Value = [System.Environment]::GetEnvironmentVariable($name)
+        }
+
+        foreach ($setting in $settings | Where-Object { -not ($updatedSettings.Contains($_.Name)) }) {
+            Write-Host "[Warning] Updating ``$($setting.Name)`` Fenergo installer setting with empty value..."
+            $setting.Value = $null
+        }
+
+        $xDoc.Save($installerRuntimeConfig)
+    }
+    else {
+        Write-Host "[Info] Using existing Fenergo installer config: $installerStaticConfig"
+        Copy-Item -Path $installerStaticConfig -Destination $installerRuntimeConfig -Force | Out-Null
+    }
+
+    $runInstaller = !(Test-Path -PathType Leaf -Path "$installerRuntimeConfig.sha1")
+    if (Test-Path "$installerRuntimeConfig.sha1") {
+        $runInstaller = (Get-FileHash $installerRuntimeConfig -Algorithm SHA1).Hash -ne (Get-Content "$installerRuntimeConfig.sha1")
+    }
+
+    if ($runInstaller) {
+        (Get-FileHash -Path $installerRuntimeConfig -Algorithm SHA1).Hash | Out-File "$installerRuntimeConfig.sha1"
+        & $env:INSTALLER_HOME\FenergoInstaller.exe -path $env:WEBAPP_HOME -config $installerRuntimeConfig -show-logs
+        if ($LASTEXITCODE -ne 0) {
+            throw [System.InvalidOperationException]"Running Fenergo Installer failed. Exit code: $LASTEXITCODE"
+        }
+    }
+    else {
+        Write-Host "[Info] Skipping running an installer because config has been not changed from the previous run."
+    }
+}
+
+function Import-CustomCertificates {
+    if (-not (Test-Path $env:CUSTOM_CERTS_BASEDIR -Type Container)) {
+        return
+    }
+
+    Write-Host "Importing custom certificates from $env:CUSTOM_CERTS_BASEDIR ..."
+
+    $baseUri = [uri]$env:CUSTOM_CERTS_BASEDIR
+    if (!$env:CUSTOM_CERTS_BASEDIR.EndsWith([System.IO.Path]::DirectorySeparatorChar)) {
+        $baseUri = [uri]($env:CUSTOM_CERTS_BASEDIR + [System.IO.Path]::DirectorySeparatorChar)
+    }
+
+    Get-ChildItem -Path $env:CUSTOM_CERTS_BASEDIR -Recurse -File -Exclude *.secret | ForEach-Object {
+        $certFile = $_
+        $absoluteDirPath = $certFile.Directory.FullName
+
+        if ($absoluteDirPath.Contains('..')) {
+            return
+        }
+
+        if (!$absoluteDirPath.EndsWith([System.IO.Path]::DirectorySeparatorChar)) {
+            $absoluteDirPath = $absoluteDirPath + [System.IO.Path]::DirectorySeparatorChar
+        }
+
+        $certLocation = $baseUri.MakeRelativeUri([Uri]$absoluteDirPath).ToString().Replace('/', '\').TrimEnd('\')
+
+        Write-Host "Importing $($certFile.Name) into $certLocation..."
+
+        if ([System.IO.Path]::GetExtension($certFile.FullName) -in (".pfx", ".p12")) {
+            $secretFilePath = Join-Path $absoluteDirPath "$($certFile.Name).secret"
+            $password = ConvertTo-SecureString (Get-Content $secretFilePath -TotalCount 1) -AsPlainText -Force
+            Import-PfxCertificate -FilePath $certFile.FullName -CertStoreLocation "Cert:\$certLocation" -Password $password
+        }
+        else {
+            $certFileAbsolutePath = $certFile.FullName
+            if ($certFile.LinkType -eq 'SymbolicLink') {
+                Set-Location $absoluteDirPath
+                $certFileAbsolutePath = ($certFile.Target | Resolve-Path).Path
+                Pop-Location
+            }
+            Import-Certificate -FilePath $certFileAbsolutePath -CertStoreLocation "Cert:\$certLocation"
+        }
+    }
+}
+
+function Set-IISHttpsCertificate {
+    if ($env:WEB_CERT_HASH) {
+        Write-Host "[Info] Setting web server certificate on https binding for ``Default Web Site`` site..."
+        & netsh http add sslcert ipport=0.0.0.0:443 certstorename=MY certhash=$env:WEB_CERT_HASH "appid={5a599f4f-02dc-4120-8646-74fcbc5b4827}" | Out-Null
+    }
+}
+## End IIS Functions
+
+# if the Vault ADDR variable is present, then we assume this pod requires
+# the Get-VaultSecrets script to run.
+if ( $env:VAULT_ADDR) {
+    write-host "Fetching required secrets from Vault.."
+    $vaultScript = "$PSScriptRoot/Get-VaultSecrets.ps1"
+    if (Test-Path $vaultScript) {
+        & $vaultScript
+        }
+}
+
+Workflow TailLog {
+    Param([string[]] $Path)
+
+    foreach -parallel ($file in $path)
+    {
+        Get-Content -Path $file -Wait
+    }
+}
+
+Import-CustomCertificates
+Set-IISHttpsCertificate
+# Update-HostsFile
+Invoke-FenergoInstaller
+Update-IIS
+
+Write-Host "[Info] Modify logging for IIS Server."
+& C:\windows\system32\inetsrv\appcmd.exe set config -section:system.applicationHost/log /centralLogFileMode:"CentralW3C" /commit:apphost
+& C:\windows\system32\inetsrv\appcmd.exe set config -section:system.applicationHost/log /centralW3CLogFile.period:"MaxSize" /commit:apphost
+& C:\windows\system32\inetsrv\appcmd.exe set config -section:system.applicationHost/log /centralW3CLogFile.truncateSize:"4294967295" /commit:apphost
+& C:\windows\system32\inetsrv\appcmd.exe set config -section:system.applicationHost/log /centralW3CLogFile.directory:"C:\Logs\WebApp\Fen" /commit:apphost
+
+# Write-Host "[Info] Disable weak ciphers."
+if(Get-TlsCipherSuite -Name "TLS_RSA_WITH_AES_256_GCM_SHA384") { Disable-TlsCipherSuite -Name "TLS_RSA_WITH_AES_256_GCM_SHA384" }
+if(Get-TlsCipherSuite -Name "TLS_RSA_WITH_AES_128_GCM_SHA256") { Disable-TlsCipherSuite -Name "TLS_RSA_WITH_AES_128_GCM_SHA256" }
+if(Get-TlsCipherSuite -Name "TLS_RSA_WITH_AES_256_CBC_SHA256") { Disable-TlsCipherSuite -Name "TLS_RSA_WITH_AES_256_CBC_SHA256" }
+if(Get-TlsCipherSuite -Name "TLS_RSA_WITH_AES_128_CBC_SHA256") { Disable-TlsCipherSuite -Name "TLS_RSA_WITH_AES_128_CBC_SHA256" }
+
+Write-Host "[Info] Fenergo Application initialization completed."
+
+Start-Process -NoNewWindow -FilePath C:\ServiceMonitor.exe -ArgumentList w3svc;
+netsh http flush logbuffer | Out-Null
+Start-Sleep -s 140
+TailLog (dir 'C:\logs\WebApp\Fen\*\*')

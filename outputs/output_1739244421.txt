@@ -1,0 +1,4 @@
+Command: pwd
+
+Output:
+/home/runner/work/C2C-demo/C2C-demo

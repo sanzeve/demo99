@@ -1,0 +1,5 @@
+Command: ls
+
+Output:
+script.py
+script1.py

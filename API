@@ -1,0 +1,101 @@
+Follow link Testing to SVHA sharepoint to download postman collection and environment file.
+Import the environment 
+Image
+Import all the collections
+Image
+To obtain helpseeker token
+You must first sign up using your email address (Sign in to your account)  and "No account? Create one"
+If you facing issues reach out to @Ashwani Raghav to ensure your contact record in https://orgad765dff.crm6.dynamics.com/ has been created with Contact Type of Patient. 
+Then Login via (Sign in to your account)
+Copy the JWT token and override the postman environment variable called "Helpseeker-Token"
+For the other environment variables please navigate to KV 
+ 
+APIM Resource:apim-int-mmhci-tst-ae-01 - Microsoft Azure
+Logic App: logic-int-mmhci-tst-ae-01 - Microsoft Azure
+ 
+Please ensure you have Contributor access enabled. Reach out to Jeff if issue with your PIM @Jeff Chowdhury - SVHA.
+ 
+Endpoints:
+Internal - https://apim-int-mmhci-tst-ae-01.azure-api.net/ (this is currently set in postman collection)
+External - https://aetst-auth.mmhctesting.org.au/
+ 
+WIP Detailed Design doc: https://svhaorg.sharepoint.com/:w:/r/teams/NEISConsortiumCollaborationICTSVHAAccentureLiquid/_layouts/15/Doc.aspx?sourcedoc=%7B66B79899-389B-4296-AD72-65025EFA6956%7D&file=MMHCI%20Integration%20Detailed%20Design%20WIP.docx&action=default&mobileredirect=true
+Security Policy Implementation summary: apim-security-report.md - Repos
+ 
+Image
+ 
+Image
+Regards,
+
+Toan Vi Do | Group Manager
+
+Software Engineering
+Avanade Australia Pty Ltd
+
+3 Sussex Street, Barangaroo, NSW 2000
+Mobile: +61 411 722 842
+
+Email: vi.toan.do@avanade.com
+
+www.avanade.com
+
+ImageImage
+
+ 
+
+ 
+From: sudipto.b.mukherjee@accenture.com
+Sent: Thursday, February 26, 2026 7:31 PM
+To: sudipto.b.mukherjee@accenture.com <sudipto.b.mukherjee@accenture.com>; Ashwani Raghav <ashwani.raghav@avanade.com>; Vi Toan Do <vi.toan.do@avanade.com>; Marcus Greasly <marcus.greasly@avanade.com>; Bronko Sosic (Accenture) <bronko.sosic@accenture.com>; julie.madjarevic@svha.org.au <julie.madjarevic@svha.org.au>; Chiru Adapa <chiru.adapa@avanade.com>; adam.hall@svha.org.au <adam.hall@svha.org.au>; bradley.sparks@svha.org.au <bradley.sparks@svha.org.au>; Jax Fong <jax.fong@avanade.com>
+Subject: MMHCHI - Pen testing technical solution walkthrough
+When: Friday, February 27, 2026 11:30 AM-12:30 PM.
+Where: Microsoft Teams Meeting
+ 
+Hello,
+ 
+All as per our pen test kick off we will be required to provide a technical walkthrough of the solution to our pen test team.
+ 
+The technical walkthrough should cover the below:
+ 
+D365 Solution and associated end points
+Telehealth solution and associated endpoints
+Integrations (Including referral) and associated end points
+ 
+Please note Pen testers are just focusing on MMHCI Referral API, D365 and Telehealth solution as of now. They will focus on "Help Seeker Portal" at a later point in time.
+ 
+@Julie Madjarevic - SVHA @Bradley Sparks - SVHA Please forward this to the pen test team.
+ 
+Thanks.
+ 
+Regards,
+Sudi
+0470771790
+ 
+ 
+________________________________________________________________________________
+Microsoft Teams meeting
+Join: https://teams.microsoft.com/meet/28788492026101?p=mbPLzRvURZAFZpNP3C
+Meeting ID: 287 884 920 261 01
+Passcode: kU3mg6zt
+Need help? | System reference
+Dial in by phone
++61 2 5104 3727,,539713778# Australia, Canberra
+Find a local number
+Phone conference ID: 539 713 778#
+Join on a video conferencing device
+Tenant key: From Accenture Videoconference Device (VTC) Dial 123. From Non-Accenture Videoconference device dial accenture@m.webex.com
+Video ID: 116 645 185 91
+More info
+For organizers: Meeting options | Reset dial-in PIN
+This meeting supports the use of AI-powered features to create summaries and insights about this meeting. If someone activates this feature, a notification will appear. For more information on how Accenture handles personal data in these instances, please refer to the link below.
+Privacy and security
+________________________________________________________________________________
+ 
+
+This message is for the designated recipient only and may contain privileged, proprietary, or otherwise confidential information. If you have received it in error, please notify the sender immediately and delete the original. Any other use of the e-mail by you is prohibited. Where allowed by local law, electronic communications with Accenture and its affiliates, including e-mail and instant messaging (including content), may be scanned by our systems for the purposes of information security, AI-powered support capabilities, and assessment of internal compliance with Accenture policy. Your privacy is important to us. Accenture uses your personal data only in compliance with data protection laws. For further information on how Accenture processes your personal data, please see our privacy statement at https://www.accenture.com/us-en/privacy-policy.
+______________________________________________________________________________________
+
+www.accenture.com
+This message is for the designated recipient only and may contain privileged, proprietary, or otherwise confidential information. If you have received it in error, please notify the sender immediately and delete the original. Any other use of the e-mail by you is prohibited. Where allowed by local law, electronic communications with Avanade and its affiliates, including e-mail and instant messaging (including content), may be scanned by our systems for the purposes of information security, AI-powered support capabilities, and assessment of internal compliance with Avanade policy. Your privacy is important to us. Avanade uses your personal data only in compliance with data protection laws. For further information on how Avanade processes your personal data, please see our privacy statement at https://www.avanade.com/privacy.
+______________________________________________________________________________________
+https://www.avanade.com

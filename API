@@ -99,3 +99,7 @@ www.accenture.com
 This message is for the designated recipient only and may contain privileged, proprietary, or otherwise confidential information. If you have received it in error, please notify the sender immediately and delete the original. Any other use of the e-mail by you is prohibited. Where allowed by local law, electronic communications with Avanade and its affiliates, including e-mail and instant messaging (including content), may be scanned by our systems for the purposes of information security, AI-powered support capabilities, and assessment of internal compliance with Avanade policy. Your privacy is important to us. Avanade uses your personal data only in compliance with data protection laws. For further information on how Avanade processes your personal data, please see our privacy statement at https://www.avanade.com/privacy.
 ______________________________________________________________________________________
 https://www.avanade.com
+
+
+
+https://mmhcisit.ciamlogin.com/5ab80b52-e8e5-45c5-bd8b-09c3a74f3d7c/oauth2/v2.0/authorize?client_id=1c8e556d-bd4c-41bd-a7d2-d724797f78b3&nonce=Eswksf_ON_&redirect_uri=https://jwt.ms&scope=openid&response_type=id_token&prompt=login
